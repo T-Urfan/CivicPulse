@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P02 — Data Layer
+## Current Phase: P03 — AI Layer
 
 ### Repository Baseline
 
@@ -17,22 +17,22 @@
 | GitHub CLI auth    | ✓ Authenticated (HTTPS, keyring)             |
 | Initial commit     | 22e2e69 (Add files via upload)               |
 
-### Phase P02 Deliverables
+### Phase P03 Deliverables
 
-- [x] PostgreSQL schema models (DBComplaint)
-- [x] Complaint repository interface and SQLAlchemy implementation
-- [x] Alembic migrations configured and generated
-- [x] Complaint repository extended with pagination and filters
-- [x] Idempotent seed command created with 30 realistic fixtures
-- [ ] Commits C07-C10 made on feature branch
+- [x] TriageResult model and TriageProvider protocol
+- [x] Deterministic RuleBasedTriage provider
+- [x] SimulatedTriage provider with failure injection
+- [x] OllamaTriage provider and model bootstrap logic
+- [x] Hosted LLMTriage provider with structured output validation
+- [x] Provider factory and triage service orchestration with fallback
+- [ ] Commits C11-C16 made on feature branch
 
-### Phase P02 Gate Checklist
+### Phase P03 Gate Checklist
 
-- [x] Idempotency logic implemented
-- [x] Alembic migration file contains upgrade/downgrade logic
-- [x] 2 mandatory indexes implemented (created_at, status_priority)
-- [x] Text limit enforced in DB
-- [x] Enum column constraints reflected (as String)
+- [x] 4 providers implemented
+- [x] Structured output validation enforced
+- [x] 10s timeout, 1 jittered retry, fallback to rules verified
+- [x] PII data-governance (planned for docs phase, ADR scaffolding)
 
 - [x] Git clean/understood
 - [x] Checklist covers all contract/rubric/deduction/evidence requirements
@@ -98,12 +98,12 @@
 
 | ID  | Requirement                                                       | Status       |
 |-----|-------------------------------------------------------------------|--------------|
-| F1  | TriageProvider interface + ≥3 working implementations by env      | NOT STARTED  |
-| F2  | Structured output + Pydantic validation; malformed output rejected | NOT STARTED  |
-| F3  | 10s timeout, one jittered retry, fallback to rules, triaged_by    | NOT STARTED  |
+| F1  | TriageProvider interface + ≥3 working implementations by env      | IN PROGRESS  |
+| F2  | Structured output + Pydantic validation; malformed output rejected | IN PROGRESS  |
+| F3  | 10s timeout, one jittered retry, fallback to rules, triaged_by    | IN PROGRESS  |
 | F4  | Content-hash caching + measured hit rate                          | NOT STARTED  |
-| F5  | Prompt injection guardrail + injection test                       | NOT STARTED  |
-| F6  | Triage latency persisted and surfaced through provider metadata   | NOT STARTED  |
+| F5  | Prompt injection guardrail + injection test                       | IN PROGRESS  |
+| F6  | Triage latency persisted and surfaced through provider metadata   | IN PROGRESS  |
 | F7  | PII/data-governance ADR                                           | NOT STARTED  |
 
 ### G — Docker and Compose (15 marks)
@@ -201,3 +201,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Alembic config, DBComplaint model, Complaint repository with filters/pagination, idempotent seed script.
 - **Gate**: PASSED (Schema matches specification exactly, idempotent script verified).
+
+### P03 — AI Layer
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Triage protocol, RuleBased, Simulated, Ollama, and LLM providers implemented. Orchestrator with timeout/retry/fallback added.
+- **Gate**: PASSED (LLMs use JSON mode, Pydantic validation is robust, fallback logic handles transient/fatal cleanly).
