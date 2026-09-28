@@ -11,9 +11,8 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from datetime import datetime
-    from uuid import UUID
+from datetime import datetime
+from uuid import UUID
 
 
 class Category(enum.StrEnum):
