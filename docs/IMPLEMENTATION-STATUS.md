@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P00 — Forensics and Assignment Mapping
+## Current Phase: P02 — Data Layer
 
 ### Repository Baseline
 
@@ -17,19 +17,22 @@
 | GitHub CLI auth    | ✓ Authenticated (HTTPS, keyring)             |
 | Initial commit     | 22e2e69 (Add files via upload)               |
 
-### Phase P00 Deliverables
+### Phase P02 Deliverables
 
-- [x] Repository inspected and baseline documented
-- [x] Master XML read completely (964 lines)
-- [x] Verification report read completely (388 lines)
-- [x] Branch strategy established (main → dev → feature/*)
-- [x] `.gitignore` created (covers Python, Node, .env, IDE, Docker, K8s)
-- [x] `.env.example` created with safe placeholders
-- [x] Repository skeleton directories created
-- [x] `docs/IMPLEMENTATION-STATUS.md` created (this file)
-- [ ] First legitimate commit made on feature branch
+- [x] PostgreSQL schema models (DBComplaint)
+- [x] Complaint repository interface and SQLAlchemy implementation
+- [x] Alembic migrations configured and generated
+- [x] Complaint repository extended with pagination and filters
+- [x] Idempotent seed command created with 30 realistic fixtures
+- [ ] Commits C07-C10 made on feature branch
 
-### Phase P00 Gate Checklist
+### Phase P02 Gate Checklist
+
+- [x] Idempotency logic implemented
+- [x] Alembic migration file contains upgrade/downgrade logic
+- [x] 2 mandatory indexes implemented (created_at, status_priority)
+- [x] Text limit enforced in DB
+- [x] Enum column constraints reflected (as String)
 
 - [x] Git clean/understood
 - [x] Checklist covers all contract/rubric/deduction/evidence requirements
@@ -48,7 +51,7 @@
 | A1  | main protected, no direct push, PR required, CI required, ≥1 approval | NOT STARTED  |
 | A2  | dev + feature branches; no direct work on main                    | IN PROGRESS  |
 | A3  | ≥5 merged PRs, each linked to Issue, substantive partner review   | NOT STARTED  |
-| A4  | ≥35 commits, conventional prefixes, neither partner below 35%     | NOT STARTED  |
+| A4  | ≥35 commits, conventional prefixes, neither partner below 35%     | IN PROGRESS  |
 | A5  | One deliberate real-code merge conflict with evidence              | NOT STARTED  |
 
 ### B — Frontend (18 marks)
@@ -58,8 +61,8 @@
 | B1  | Submit view: validation/loading/category/priority/summary/provider | NOT STARTED  |
 | B2  | Dashboard: pagination/filters/status transitions/server 409       | NOT STARTED  |
 | B3  | Stats aggregates + X-Cache state                                  | NOT STARTED  |
-| B4  | Runtime config: no baked API URL; one image works across envs     | NOT STARTED  |
-| B5  | ≥5 meaningful frontend tests                                      | NOT STARTED  |
+| B4  | Runtime config: no baked API URL; one image works across envs     | IN PROGRESS  |
+| B5  | ≥5 meaningful frontend tests                                      | IN PROGRESS  |
 
 ### C — Backend (25 marks)
 
@@ -68,19 +71,19 @@
 | C1  | All contract endpoints, correct status codes, field-level errors  | NOT STARTED  |
 | C2  | Four-layer separation, no SQL outside repos, no business in routes | NOT STARTED  |
 | C3  | Explicit state transition table, invalid transitions 409          | NOT STARTED  |
-| C4  | health/readiness distinction; health does not touch DB            | NOT STARTED  |
-| C5  | JSON stdout logging with propagated request_id                    | NOT STARTED  |
-| C6  | SIGTERM drains in-flight work before exit                         | NOT STARTED  |
-| C7  | ≥14 deterministic backend tests, coverage ≥65%                    | NOT STARTED  |
+| C4  | health/readiness distinction; health does not touch DB            | IN PROGRESS  |
+| C5  | JSON stdout logging with propagated request_id                    | IN PROGRESS  |
+| C6  | SIGTERM drains in-flight work before exit                         | IN PROGRESS  |
+| C7  | ≥14 deterministic backend tests, coverage ≥65%                    | IN PROGRESS  |
 
 ### D — Data Layer (12 marks)
 
 | ID  | Requirement                                                       | Status       |
 |-----|-------------------------------------------------------------------|--------------|
-| D1  | Alembic migrations; no startup DDL                                | NOT STARTED  |
-| D2  | Complete schema including triaged_by, ai_summary, etc.            | NOT STARTED  |
-| D3  | Two indexes with named-query justification                        | NOT STARTED  |
-| D4  | Idempotent ≥30 realistic complaints; second run changes nothing   | NOT STARTED  |
+| D1  | Alembic migrations; no startup DDL                                | IN PROGRESS  |
+| D2  | Complete schema including triaged_by, ai_summary, etc.            | IN PROGRESS  |
+| D3  | Two indexes with named-query justification                        | IN PROGRESS  |
+| D4  | Idempotent ≥30 realistic complaints; second run changes nothing   | IN PROGRESS  |
 
 ### E — Cache Layer (10 marks)
 
@@ -186,3 +189,15 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Repository inspected, master files read, branch strategy established, skeleton created
 - **Gate**: PASSED
+
+### P01 — Foundations and Configuration
+- **Date**: 2026-09-28
+- **Status**: COMPLETE
+- **Actions**: FastAPI and React foundations, env models, typed domain, tests, and routing scaffolds created.
+- **Gate**: PASSED (Tests verify everything builds/lints/types and runs clean).
+
+### P02 — Data Layer
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Alembic config, DBComplaint model, Complaint repository with filters/pagination, idempotent seed script.
+- **Gate**: PASSED (Schema matches specification exactly, idempotent script verified).
