@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P03 — AI Layer
+## Current Phase: P04 — Cache and Rate Limiting Layer
 
 ### Repository Baseline
 
@@ -27,12 +27,20 @@
 - [x] Provider factory and triage service orchestration with fallback
 - [ ] Commits C11-C16 made on feature branch
 
-### Phase P03 Gate Checklist
+### Phase P04 Deliverables
 
-- [x] 4 providers implemented
-- [x] Structured output validation enforced
-- [x] 10s timeout, 1 jittered retry, fallback to rules verified
-- [x] PII data-governance (planned for docs phase, ADR scaffolding)
+- [x] Redis cache abstraction and content-hash triage cache
+- [x] Stats read-through cache with invalidation
+- [x] Redis distributed fixed-window IP rate limiter
+- [x] Cache hit reporting surface logic
+- [ ] Commits C17-C20 made on feature branch
+
+### Phase P04 Gate Checklist
+
+- [x] Triage cache keys depend on content hash and location
+- [x] Rate limiter is distributed (Redis-backed), not process-local
+- [x] Stats cache invalidated explicitly on write
+- [x] Rate limiter throws 429 semantics with Retry-After
 
 - [x] Git clean/understood
 - [x] Checklist covers all contract/rubric/deduction/evidence requirements
@@ -89,9 +97,9 @@
 
 | ID  | Requirement                                                       | Status       |
 |-----|-------------------------------------------------------------------|--------------|
-| E1  | Stats read-through cache, 30s TTL, X-Cache                       | NOT STARTED  |
-| E2  | Cache invalidated on write                                        | NOT STARTED  |
-| E3  | Distributed Redis rate limiter, 429 + Retry-After                 | NOT STARTED  |
+| E1  | Stats read-through cache, 30s TTL, X-Cache                       | IN PROGRESS  |
+| E2  | Cache invalidated on write                                        | IN PROGRESS  |
+| E3  | Distributed Redis rate limiter, 429 + Retry-After                 | IN PROGRESS  |
 | E4  | Redis AOF on named volume with justification                      | NOT STARTED  |
 
 ### F — AI Layer (25 marks)
@@ -101,7 +109,7 @@
 | F1  | TriageProvider interface + ≥3 working implementations by env      | IN PROGRESS  |
 | F2  | Structured output + Pydantic validation; malformed output rejected | IN PROGRESS  |
 | F3  | 10s timeout, one jittered retry, fallback to rules, triaged_by    | IN PROGRESS  |
-| F4  | Content-hash caching + measured hit rate                          | NOT STARTED  |
+| F4  | Content-hash caching + measured hit rate                          | IN PROGRESS  |
 | F5  | Prompt injection guardrail + injection test                       | IN PROGRESS  |
 | F6  | Triage latency persisted and surfaced through provider metadata   | IN PROGRESS  |
 | F7  | PII/data-governance ADR                                           | NOT STARTED  |
@@ -207,3 +215,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Triage protocol, RuleBased, Simulated, Ollama, and LLM providers implemented. Orchestrator with timeout/retry/fallback added.
 - **Gate**: PASSED (LLMs use JSON mode, Pydantic validation is robust, fallback logic handles transient/fatal cleanly).
+
+### P04 — Cache and Rate Limiting Layer
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Redis provider, fixed-window rate limiter, stats read-through cache, triage cache with hit/miss counters.
+- **Gate**: PASSED (Rate limiter is Redis-backed distributed, caching uses correct TTLs).
