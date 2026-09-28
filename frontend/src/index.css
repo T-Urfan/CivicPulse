@@ -1,0 +1,36 @@
+:root {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-surface-hover: #242736;
+  --color-border: #2d3044;
+  --color-text: #e4e7f0;
+  --color-text-muted: #8b90a5;
+  --color-primary: #6c63ff;
+  --color-primary-hover: #7f78ff;
+  --color-accent: #00d4aa;
+  --color-danger: #ff4d6a;
+  --color-warning: #ffb84d;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
