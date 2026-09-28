@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
 from app.providers.redis import get_redis_dependency
@@ -22,7 +22,7 @@ async def get_stats(
     """Retrieve aggregate statistics."""
     service = StatsService(session, redis)
     stats, is_hit = await service.get_dashboard_stats()
-    
+
     # Requirement: X-Cache header
     response.headers["X-Cache"] = "HIT" if is_hit else "MISS"
     return stats
@@ -45,7 +45,7 @@ async def get_providers(
 ) -> MetaResponse:
     """Retrieve current triage provider metadata and cache stats."""
     provider = get_triage_provider()
-    
+
     # For now we'll just return the provider identity as requested.
     # The actual "last 20 outcomes" is a nice-to-have observable, we'll leave it empty to start
     # or populate it if we implement a rotating list in Redis.

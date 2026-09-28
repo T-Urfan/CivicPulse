@@ -64,13 +64,13 @@ class LLMTriage(TriageProvider):
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(self.api_url, headers=headers, json=payload)
             response.raise_for_status()
-            
+
             data = response.json()
             raw_content = data["choices"][0]["message"]["content"]
-            
+
             # Pydantic validation handles malformed JSON and schema mismatches
             parsed = json.loads(raw_content)
-            
+
             return TriageResult(
                 category=parsed.get("category"),
                 priority=parsed.get("priority"),

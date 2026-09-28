@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 from redis.asyncio import Redis
 
@@ -17,7 +17,7 @@ class StatsCache:
     def __init__(self, redis: Redis) -> None:
         self.redis = redis
 
-    async def get_stats(self) -> tuple[Optional[dict[str, Any]], bool]:
+    async def get_stats(self) -> tuple[dict[str, Any] | None, bool]:
         """Attempt to fetch stats. Returns (data, is_hit)."""
         raw = await self.redis.get(self.STATS_KEY)
         if raw:

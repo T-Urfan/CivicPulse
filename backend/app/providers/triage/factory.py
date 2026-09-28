@@ -6,10 +6,8 @@ Implements retries, fallback logic, and provider selection based on environment.
 from __future__ import annotations
 
 import logging
-from typing import cast
 
 import httpx
-from pydantic import ValidationError
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -90,12 +88,12 @@ class TriageOrchestrator:
         except Exception as e:
             # Fallback triggered
             error_class = e.__class__.__name__
-            
+
             # Exactly one WARNING per fallback with complaint id, provider, and error class
             logger.warning(
                 f"Triage fallback triggered for complaint_id={complaint_id}: "
                 f"provider={self.provider.name} failed with {error_class} ({e})"
             )
-            
+
             # Fallback never intentionally fails
             return await self.fallback_provider.triage(text, location)

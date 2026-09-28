@@ -7,12 +7,10 @@ Pydantic models used across routes, services, repositories, and providers.
 from __future__ import annotations
 
 import enum
-from typing import TYPE_CHECKING
-
-from pydantic import BaseModel, ConfigDict, Field
-
 from datetime import datetime
 from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Category(enum.StrEnum):

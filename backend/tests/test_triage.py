@@ -1,8 +1,6 @@
 """Tests for triage AI layer and deterministic fallbacks."""
 
 import pytest
-from httpx import TimeoutException
-
 from app.models import Category
 from app.providers.triage.factory import TriageOrchestrator
 from app.providers.triage.simulated import SimulatedTriage

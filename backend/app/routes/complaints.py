@@ -1,20 +1,24 @@
 """HTTP routes for complaints management."""
 
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
-from app.models import Category, ComplaintCreate, ComplaintResponse, Priority, Status, ALLOWED_TRANSITIONS
+from app.models import (
+    ALLOWED_TRANSITIONS,
+    ComplaintCreate,
+    ComplaintResponse,
+    Status,
+)
 from app.providers.redis import get_redis_dependency
 from app.providers.triage.factory import TriageOrchestrator, get_triage_provider
 from app.repositories.complaint import SQLAlchemyComplaintRepository
 from app.services.rate_limiter import DistributedRateLimiter, RateLimitExceeded
 from app.services.stats import StatsService
-from sqlalchemy.ext.asyncio import AsyncSession
-from redis.asyncio import Redis
 
 router = APIRouter(prefix="/api/complaints", tags=["complaints"])
 
@@ -42,12 +46,12 @@ async def create_complaint(
     # Triage Phase
     provider = get_triage_provider()
     orchestrator = TriageOrchestrator(provider)
-    
+
     # We generate a temporary ID to pass for logging
     temp_id = str(uuid.uuid4())
     triage_result = await orchestrator.triage(
-        complaint_id=temp_id, 
-        text=complaint_in.text, 
+        complaint_id=temp_id,
+        text=complaint_in.text,
         location=complaint_in.location
     )
 
@@ -91,9 +95,9 @@ class PaginatedComplaints(BaseModel):
 
 @router.get("", response_model=PaginatedComplaints)
 async def list_complaints(
-    category: Optional[str] = None,
-    priority: Optional[str] = None,
-    status: Optional[str] = None,
+    category: str | None = None,
+    priority: str | None = None,
+    status: str | None = None,
     page: int = 1,
     page_size: int = 50,
     session: AsyncSession = Depends(get_db_session),
@@ -101,12 +105,12 @@ async def list_complaints(
     """List complaints with filters and pagination."""
     if page_size > 100:
         page_size = 100
-        
+
     repo = SQLAlchemyComplaintRepository(session)
     items, total = await repo.list_complaints(
         category=category, priority=priority, status=status, page=page, page_size=page_size
     )
-    
+
     return PaginatedComplaints(items=items, total=total, page=page, page_size=page_size)
 
 
@@ -130,7 +134,7 @@ async def update_complaint_status(
     current_status = complaint.status
     target_status = status_update.status
 
-    allowed = ALLOWED_TRANSITIONS.get(current_status, [])
+    allowed = ALLOWED_TRANSITIONS.get(current_status, [])  # type: ignore
     if target_status not in allowed:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -139,9 +143,10 @@ async def update_complaint_status(
 
     # In a real app we'd update the DB. We didn't add a repository update method yet!
     # Let's update using SQLAlchemy directly.
-    from app.repositories.models import DBComplaint
     from sqlalchemy import update
-    
+
+    from app.repositories.models import DBComplaint
+
     stmt = (
         update(DBComplaint)
         .where(DBComplaint.id == complaint_id)
@@ -149,10 +154,10 @@ async def update_complaint_status(
     )
     await session.execute(stmt)
     await session.commit()
-    
+
     # Refetch
     updated_complaint = await repo.get_by_id(complaint_id)
-    
+
     # Invalidate stats
     stats_service = StatsService(session, redis)
     await stats_service.invalidate_stats()

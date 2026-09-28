@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from typing import Optional
 
 from redis.asyncio import Redis
 
@@ -28,11 +27,11 @@ class TriageCache:
         content_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
         return f"triage_cache:{content_hash}"
 
-    async def get(self, text: str, location: str) -> Optional[TriageResult]:
+    async def get(self, text: str, location: str) -> TriageResult | None:
         """Fetch a cached triage result if it exists."""
         key = self._generate_key(text, location)
         raw = await self.redis.get(key)
-        
+
         # Track hit rate in a separate Redis counter (hit/miss)
         if raw:
             await self.redis.incr("metrics:triage_cache:hits")

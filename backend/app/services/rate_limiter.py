@@ -41,7 +41,7 @@ class DistributedRateLimiter:
         self.redis = redis
         self.limit = limit
         self.window_seconds = window_seconds
-        
+
     def _generate_key(self, endpoint: str, client_ip: str) -> str:
         """Generate a fixed-window key for the specific IP and endpoint."""
         current_window = int(time.time() / self.window_seconds)
@@ -53,7 +53,7 @@ class DistributedRateLimiter:
         Raises RateLimitExceeded if the limit is breached.
         """
         key = self._generate_key(endpoint, client_ip)
-        
+
         # We load the script directly or use eval. eval is simpler for a short script.
         allowed = await self.redis.eval(
             FIXED_WINDOW_LUA,

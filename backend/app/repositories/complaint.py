@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Optional, Protocol
+from typing import Protocol
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,15 +19,15 @@ class ComplaintRepository(Protocol):
         """Create and return a new complaint."""
         ...
 
-    async def get_by_id(self, complaint_id: uuid.UUID) -> Optional[ComplaintResponse]:
+    async def get_by_id(self, complaint_id: uuid.UUID) -> ComplaintResponse | None:
         """Fetch a single complaint by ID."""
         ...
 
     async def list_complaints(
         self,
-        category: Optional[str] = None,
-        priority: Optional[str] = None,
-        status: Optional[str] = None,
+        category: str | None = None,
+        priority: str | None = None,
+        status: str | None = None,
         page: int = 1,
         page_size: int = 50,
     ) -> tuple[list[ComplaintResponse], int]:
@@ -66,7 +66,7 @@ class SQLAlchemyComplaintRepository:
         await self.session.refresh(db_complaint)
         return self._to_domain(db_complaint)
 
-    async def get_by_id(self, complaint_id: uuid.UUID) -> Optional[ComplaintResponse]:
+    async def get_by_id(self, complaint_id: uuid.UUID) -> ComplaintResponse | None:
         """Fetch a complaint by ID."""
         stmt = select(DBComplaint).where(DBComplaint.id == complaint_id)
         result = await self.session.execute(stmt)
@@ -77,16 +77,16 @@ class SQLAlchemyComplaintRepository:
 
     async def list_complaints(
         self,
-        category: Optional[str] = None,
-        priority: Optional[str] = None,
-        status: Optional[str] = None,
+        category: str | None = None,
+        priority: str | None = None,
+        status: str | None = None,
         page: int = 1,
         page_size: int = 50,
     ) -> tuple[list[ComplaintResponse], int]:
         """Fetch paginated complaints with filters."""
         stmt = select(DBComplaint)
         count_stmt = select(func.count()).select_from(DBComplaint)
-        
+
         # Apply filters
         if category:
             stmt = stmt.where(DBComplaint.category == category)
@@ -97,20 +97,20 @@ class SQLAlchemyComplaintRepository:
         if status:
             stmt = stmt.where(DBComplaint.status == status)
             count_stmt = count_stmt.where(DBComplaint.status == status)
-            
+
         # Pagination
         limit = min(page_size, 100)  # Max page size enforced here or in routes
         offset = (max(page, 1) - 1) * limit
-        
+
         # Order chronologically descending
         stmt = stmt.order_by(DBComplaint.created_at.desc())
         stmt = stmt.limit(limit).offset(offset)
-        
+
         # Execute queries concurrently if desired, but sequential is fine
         count_result = await self.session.execute(count_stmt)
         total_count = count_result.scalar_one()
-        
+
         items_result = await self.session.execute(stmt)
         items = items_result.scalars().all()
-        
+
         return [self._to_domain(item) for item in items], total_count

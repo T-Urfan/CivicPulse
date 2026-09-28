@@ -59,9 +59,9 @@ class OllamaTriage(TriageProvider):
                 response.raise_for_status()
                 data = response.json()
                 raw_content = data["response"]
-                
+
                 parsed = json.loads(raw_content)
-                
+
                 return TriageResult(
                     category=parsed.get("category"),
                     priority=parsed.get("priority"),

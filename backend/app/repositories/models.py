@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -36,7 +35,7 @@ class DBComplaint(Base):
     )
     text: Mapped[str] = mapped_column(String(2000), nullable=False)
     location: Mapped[str] = mapped_column(String(200), nullable=False)
-    reporter_contact: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    reporter_contact: Mapped[str | None] = mapped_column(String(200), nullable=True)
 
     # We store enums as strings in the DB to avoid Postgres ENUM lifecycle pain,
     # as validated by Pydantic on the way in.
@@ -44,18 +43,18 @@ class DBComplaint(Base):
     priority: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="open")
 
-    ai_summary: Mapped[Optional[str]] = mapped_column(String(140), nullable=True)
+    ai_summary: Mapped[str | None] = mapped_column(String(140), nullable=True)
     triaged_by: Mapped[str] = mapped_column(String(50), nullable=False)
     triage_latency_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )

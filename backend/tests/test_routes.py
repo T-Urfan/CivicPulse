@@ -1,8 +1,7 @@
 """Unit tests for FastAPI routes and core business paths."""
 
-from fastapi.testclient import TestClient
-
 from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -27,10 +26,10 @@ def test_validation_error_contract():
         "text": "",  # Too short
         "location": "Test"
     }
-    
+
     # We don't actually hit the DB because validation happens in the route signature
     response = client.post("/api/complaints", json=payload)
-    
+
     assert response.status_code == 400
     data = response.json()
     assert "detail" in data

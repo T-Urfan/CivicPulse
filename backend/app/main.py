@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import AsyncGenerator  # noqa: TCH003 — used at runtime by asynccontextmanager
+from collections.abc import AsyncGenerator  # noqa: TC003 — used at runtime by asynccontextmanager
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
@@ -26,11 +26,11 @@ def setup_logging() -> None:
     """Configure structured JSON logging."""
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    
+
     # Remove existing handlers to avoid duplicates
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
-        
+
     log_handler = logging.StreamHandler()
     formatter = jsonlogger.JsonFormatter(
         "%(asctime)s %(levelname)s %(name)s %(message)s"

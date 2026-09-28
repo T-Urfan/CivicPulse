@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from redis.asyncio import Redis
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from redis.asyncio import Redis
 
 from app.repositories.models import DBComplaint
 from app.services.stats_cache import StatsCache
@@ -48,10 +48,10 @@ class StatsService:
 
         # Cache miss, compute from DB
         live_stats = await self._compute_db_stats()
-        
+
         # Populate cache
         await self.stats_cache.set_stats(live_stats)
-        
+
         return live_stats, False
 
     async def invalidate_stats(self) -> None:
