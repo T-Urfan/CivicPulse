@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P04 — Cache and Rate Limiting Layer
+## Current Phase: P06 — Frontend Foundation
 
 ### Repository Baseline
 
@@ -35,12 +35,22 @@
 - [x] Cache hit reporting surface logic
 - [ ] Commits C17-C20 made on feature branch
 
-### Phase P04 Gate Checklist
+### Phase P05 Deliverables
 
-- [x] Triage cache keys depend on content hash and location
-- [x] Rate limiter is distributed (Redis-backed), not process-local
-- [x] Stats cache invalidated explicitly on write
-- [x] Rate limiter throws 429 semantics with Retry-After
+- [x] HTTP routes for complaints and metadata
+- [x] Status state machine and 409 conflict responses
+- [x] Validation error contract (HTTP 400 + field-level details)
+- [x] Health, readiness, and metrics endpoints
+- [x] Structured JSON logging and graceful shutdown
+- [x] Unit tests for business paths, malformed output, and fallback
+- [ ] Commits C21-C26 made on feature branch
+
+### Phase P05 Gate Checklist
+
+- [x] Routes respect standard REST semantics
+- [x] 400 Validation formatting exactly matches `ValidationErrorResponse`
+- [x] `X-Request-ID` middleware works
+- [x] Fallback logic handles injected errors deterministically
 
 - [x] Git clean/understood
 - [x] Checklist covers all contract/rubric/deduction/evidence requirements
@@ -221,3 +231,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Redis provider, fixed-window rate limiter, stats read-through cache, triage cache with hit/miss counters.
 - **Gate**: PASSED (Rate limiter is Redis-backed distributed, caching uses correct TTLs).
+
+### P05 — Backend Routes and Finalization
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Created HTTP routes, 400 validation wrapper, state machine check, json logs, liveness/readiness tests.
+- **Gate**: PASSED (Tests verify fallback triggers correctly and validation returns 400).
