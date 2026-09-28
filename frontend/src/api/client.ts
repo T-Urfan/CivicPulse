@@ -23,6 +23,7 @@ export class ApiError extends Error {
     public readonly status: number,
     public readonly statusText: string,
     public readonly body?: ValidationErrorResponse | Record<string, unknown>,
+    public readonly retryAfter?: number,
   ) {
     super(`API Error ${status}: ${statusText}`);
     this.name = 'ApiError';
@@ -37,7 +38,14 @@ async function handleResponse<T>(response: Response): Promise<T> {
     } catch {
       // Response may not be JSON
     }
-    throw new ApiError(response.status, response.statusText, body);
+    
+    let retryAfter: number | undefined;
+    const retryHeader = response.headers.get('Retry-After');
+    if (retryHeader) {
+      retryAfter = parseInt(retryHeader, 10);
+    }
+    
+    throw new ApiError(response.status, response.statusText, body, retryAfter);
   }
   return response.json() as Promise<T>;
 }
