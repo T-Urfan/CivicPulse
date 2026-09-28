@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P06 — Frontend Foundation
+## Current Phase: P07 — Data Presentation Layer
 
 ### Repository Baseline
 
@@ -45,12 +45,21 @@
 - [x] Unit tests for business paths, malformed output, and fallback
 - [ ] Commits C21-C26 made on feature branch
 
-### Phase P05 Gate Checklist
+### Phase P06 Deliverables
 
-- [x] Routes respect standard REST semantics
-- [x] 400 Validation formatting exactly matches `ValidationErrorResponse`
-- [x] `X-Request-ID` middleware works
-- [x] Fallback logic handles injected errors deterministically
+- [x] Robust ErrorBoundary component
+- [x] Rich semantic layout matching modern aesthetics
+- [x] Typed domain client and fetch wrapper
+- [x] UI integration for 400 Validation Errors
+- [x] UI integration for 429 Rate Limiting
+- [ ] Commits C27-C30 made on feature branch
+
+### Phase P06 Gate Checklist
+
+- [x] Forms display field-level validation errors cleanly
+- [x] Too many submissions triggers clear 429 UI feedback
+- [x] Application survives rendering errors via boundary
+- [x] UI aesthetics follow modern glassmorphism/gradient guidelines
 
 - [x] Git clean/understood
 - [x] Checklist covers all contract/rubric/deduction/evidence requirements
@@ -237,3 +246,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Created HTTP routes, 400 validation wrapper, state machine check, json logs, liveness/readiness tests.
 - **Gate**: PASSED (Tests verify fallback triggers correctly and validation returns 400).
+
+### P06 — Frontend Foundation
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Implemented rich aesthetics via App.css/index.css, integrated ApiErrorBanner for 400/429 feedback.
+- **Gate**: PASSED (Client abstracts fetch cleanly, displays backend schema errors cleanly).
