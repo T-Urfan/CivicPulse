@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P09 — Architecture Documentation
+## Current Phase: P10 — Final Audit and PR Preparation
 
 ### Repository Baseline
 
@@ -131,7 +131,7 @@
 | F4  | Content-hash caching + measured hit rate                          | IN PROGRESS  |
 | F5  | Prompt injection guardrail + injection test                       | IN PROGRESS  |
 | F6  | Triage latency persisted and surfaced through provider metadata   | IN PROGRESS  |
-| F7  | PII/data-governance ADR                                           | NOT STARTED  |
+| F7  | PII/data-governance ADR                                           | IN PROGRESS  |
 
 ### G — Docker and Compose (15 marks)
 
@@ -264,3 +264,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Created Dockerfiles and docker-compose.yml. Configured strict healthchecks and AOF for Redis.
 - **Gate**: PASSED (Services boot in correct dependency order with state persistence).
+
+### P09 — Architecture Documentation
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Added SYSTEM-ARCHITECTURE.md and DATA-GOVERNANCE.md.
+- **Gate**: PASSED (Clear separation of concerns documented; PII risk mitigated in design).
