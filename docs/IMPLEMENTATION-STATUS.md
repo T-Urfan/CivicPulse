@@ -3,7 +3,7 @@
 > Internal engineering ledger. Updated after each implementation phase.
 > This file tracks actual progress against the master XML specification.
 
-## Current Phase: P08 — Docker and Compose
+## Current Phase: P09 — Architecture Documentation
 
 ### Repository Baseline
 
@@ -119,7 +119,7 @@
 | E1  | Stats read-through cache, 30s TTL, X-Cache                       | IN PROGRESS  |
 | E2  | Cache invalidated on write                                        | IN PROGRESS  |
 | E3  | Distributed Redis rate limiter, 429 + Retry-After                 | IN PROGRESS  |
-| E4  | Redis AOF on named volume with justification                      | NOT STARTED  |
+| E4  | Redis AOF on named volume with justification                      | IN PROGRESS  |
 
 ### F — AI Layer (25 marks)
 
@@ -258,3 +258,9 @@ All 56 rubric items preserved; discrepancy recorded per master XML instruction.
 - **Status**: COMPLETE
 - **Actions**: Added Dashboard with pagination/state transitions, Stats page with X-Cache, StatusBadges.
 - **Gate**: PASSED (Transitions are restricted, UI is functional and aesthetic).
+
+### P08 — Docker and Compose
+- **Date**: 2026-09-29
+- **Status**: COMPLETE
+- **Actions**: Created Dockerfiles and docker-compose.yml. Configured strict healthchecks and AOF for Redis.
+- **Gate**: PASSED (Services boot in correct dependency order with state persistence).
