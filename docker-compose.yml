@@ -47,6 +47,7 @@ services:
     # In production, this would be an image tag and we wouldn't map the port directly
     # image: ${IMAGE_TAG:-backend} 
     restart: unless-stopped
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://civic_user:civic_password@db:5432/civicpulse
       - REDIS_URL=redis://redis:6379/0
