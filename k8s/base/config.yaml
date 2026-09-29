@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  namespace: civicpulse
+data:
+  db_name: civicpulse
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: civicpulse
+type: Opaque
+stringData:
+  user: civic_user
+  password: PLACEHOLDER_DB_PASSWORD
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: civicpulse
+data:
+  DATABASE_URL: postgresql+asyncpg://civic_user:PLACEHOLDER_DB_PASSWORD@postgres:5432/civicpulse
+  REDIS_URL: redis://redis:6379/0
+  TRIAGE_PROVIDER: rules

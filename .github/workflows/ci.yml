@@ -1,0 +1,218 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - dev
+
+jobs:
+  lint_and_type:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install backend dev dependencies
+        run: pip install -e "./backend[dev]"
+
+      - name: Run Ruff (Backend Lint)
+        run: ruff check ./backend/app ./backend/tests
+
+      - name: Run Mypy (Backend Typecheck)
+        run: mypy ./backend/app
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Run ESLint (Frontend Lint)
+        run: cd frontend && npm run lint
+
+      - name: Run TSC (Frontend Typecheck)
+        run: cd frontend && npm run type-check
+
+  backend_tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install backend dev dependencies
+        run: pip install -e "./backend[dev]"
+
+      - name: Run Pytest
+        env:
+          TRIAGE_PROVIDER: simulated
+        run: cd backend && pytest --cov=app --cov-fail-under=65
+
+  frontend_tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Run Vitest
+        run: cd frontend && npm test
+
+  build:
+    name: Build Container Images
+    runs-on: ubuntu-latest
+    needs: [lint_and_type, backend_tests, frontend_tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: civicpulse-backend:ci
+          load: true
+
+      - name: Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: civicpulse-frontend:ci
+          load: true
+
+  scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Images for Scan
+        run: |
+          docker build -t civicpulse-backend:ci ./backend
+          docker build -t civicpulse-frontend:ci ./frontend
+
+      - name: Run Trivy on Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'civicpulse-backend:ci'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Trivy on Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'civicpulse-frontend:ci'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  manifests:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.0.0"
+
+      - name: Setup Kubeconform
+        run: |
+          curl -L -O https://github.com/yannh/kubeconform/releases/download/v0.6.4/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin
+
+      # Ensure overlays/prod exists before this runs, or it will fail
+      - name: Validate Manifests
+        run: |
+          if [ -d "k8s/overlays/prod" ]; then
+            kustomize build k8s/overlays/prod | kubeconform -strict -summary -ignore-missing-schemas
+          else
+            echo "k8s/overlays/prod not found. Skipping validation."
+          fi
+
+  integration:
+    name: Integration Smoke Test
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Docker Compose
+        run: |
+          docker compose up --build -d
+          # Wait for ready probe
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/ready | grep -q 'ready'; then
+              echo "Backend is ready!"
+              break
+            fi
+            echo "Waiting for backend..."
+            sleep 2
+          done
+
+      - name: Run Integration Path
+        run: |
+          # POST complaint
+          POST_RES=$(curl -s -X POST http://localhost:8000/api/complaints -H "Content-Type: application/json" -d '{"text": "integration test leakage", "location": "CI Area"}')
+          echo "POST response: $POST_RES"
+          
+          # GET complaint
+          ID=$(echo $POST_RES | jq -r '.id')
+          GET_RES=$(curl -s http://localhost:8000/api/complaints/$ID)
+          
+          # Assert Category
+          CATEGORY=$(echo $GET_RES | jq -r '.category')
+          if [ "$CATEGORY" == "null" ] || [ -z "$CATEGORY" ]; then
+            echo "Failed to get category"
+            exit 1
+          fi
+
+          # Test Stats Cache
+          MISS_RES=$(curl -i -s http://localhost:8000/api/stats | grep -i 'x-cache: miss' || true)
+          if [ -z "$MISS_RES" ]; then
+            echo "Expected cache miss"
+            exit 1
+          fi
+          
+          HIT_RES=$(curl -i -s http://localhost:8000/api/stats | grep -i 'x-cache: hit' || true)
+          if [ -z "$HIT_RES" ]; then
+            echo "Expected cache hit"
+            exit 1
+          fi
+
+      - name: Teardown Compose
+        if: always()
+        run: docker compose down -v
