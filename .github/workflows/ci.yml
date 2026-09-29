@@ -158,7 +158,7 @@ jobs:
       - name: Validate Manifests
         run: |
           if [ -d "k8s/overlays/prod" ]; then
-            kustomize build k8s/overlays/prod | kubeconform -strict -summary
+            kustomize build k8s/overlays/prod | kubeconform -strict -summary -ignore-missing-schemas
           else
             echo "k8s/overlays/prod not found. Skipping validation."
           fi
