@@ -32,8 +32,8 @@ const StatsPage: React.FC = () => {
       const res = await getStats();
       setStats(res.data);
       setCacheState(res.cacheState);
-    } catch (err: any) {
-      setError(err);
+    } catch (err) {
+      setError(err as Error | ApiError);
     } finally {
       setLoading(false);
     }

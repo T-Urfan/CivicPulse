@@ -33,8 +33,8 @@ const DashboardPage: React.FC = () => {
       const res = await listComplaints({ page: currentPage, page_size: 10 });
       setComplaints(res.items);
       setTotal(res.total);
-    } catch (err: any) {
-      setError(err);
+    } catch (err) {
+      setError(err as Error | ApiError);
     } finally {
       setLoading(false);
     }
@@ -48,8 +48,8 @@ const DashboardPage: React.FC = () => {
     try {
       await updateComplaintStatus(id, { status: targetStatus });
       fetchComplaints(page);
-    } catch (err: any) {
-      setError(err);
+    } catch (err) {
+      setError(err as Error | ApiError);
     }
   };
 

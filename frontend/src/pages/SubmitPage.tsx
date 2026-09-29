@@ -29,8 +29,8 @@ const SubmitPage: React.FC = () => {
       setText('');
       setLocation('');
       setContact('');
-    } catch (err: any) {
-      setError(err);
+    } catch (err) {
+      setError(err as Error);
     } finally {
       setIsSubmitting(false);
     }
