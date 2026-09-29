@@ -1,11 +1,15 @@
 """Operational health and metrics routes."""
 
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from fastapi import APIRouter, Depends, HTTPException, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
-from redis.asyncio import Redis
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
 from app.providers.redis import get_redis_dependency
@@ -34,12 +38,12 @@ async def readiness_probe(
     try:
         await session.execute(text("SELECT 1"))
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Database check failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Database check failed: {e}") from e
 
     try:
         await redis.ping()
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Redis check failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Redis check failed: {e}") from e
 
     return {"status": "ready"}
 

@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import time
+from typing import TYPE_CHECKING
 
-from redis.asyncio import Redis
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
 
 # Lua script for a fixed-window rate limiter.
 # Keys: [rate_limit_key]
@@ -22,7 +24,7 @@ return 1
 """
 
 
-class RateLimitExceeded(Exception):
+class RateLimitExceededError(Exception):
     """Exception raised when the client exceeds the rate limit."""
     def __init__(self, retry_after: int) -> None:
         self.retry_after = retry_after
@@ -50,7 +52,7 @@ class DistributedRateLimiter:
     async def check_rate_limit(self, endpoint: str, client_ip: str) -> None:
         """
         Check if the client IP is allowed to make a request to the endpoint.
-        Raises RateLimitExceeded if the limit is breached.
+        Raises RateLimitExceededError if the limit is breached.
         """
         key = self._generate_key(endpoint, client_ip)
 
@@ -68,4 +70,4 @@ class DistributedRateLimiter:
             current_time = int(time.time())
             window_end = ((current_time // self.window_seconds) + 1) * self.window_seconds
             retry_after = max(1, window_end - current_time)
-            raise RateLimitExceeded(retry_after=retry_after)
+            raise RateLimitExceededError(retry_after=retry_after)

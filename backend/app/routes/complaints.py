@@ -1,11 +1,16 @@
 """HTTP routes for complaints management."""
 
+from __future__ import annotations
+
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
-from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
 from app.models import (
@@ -17,7 +22,7 @@ from app.models import (
 from app.providers.redis import get_redis_dependency
 from app.providers.triage.factory import TriageOrchestrator, get_triage_provider
 from app.repositories.complaint import SQLAlchemyComplaintRepository
-from app.services.rate_limiter import DistributedRateLimiter, RateLimitExceeded
+from app.services.rate_limiter import DistributedRateLimiter, RateLimitExceededError
 from app.services.stats import StatsService
 
 router = APIRouter(prefix="/api/complaints", tags=["complaints"])
@@ -36,12 +41,12 @@ async def create_complaint(
     rate_limiter = DistributedRateLimiter(redis)
     try:
         await rate_limiter.check_rate_limit(endpoint="POST /api/complaints", client_ip=client_ip)
-    except RateLimitExceeded as e:
+    except RateLimitExceededError as exc:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=str(e),
-            headers={"Retry-After": str(e.retry_after)}
-        )
+            detail=str(exc),
+            headers={"Retry-After": str(exc.retry_after)},
+        ) from exc
 
     # Triage Phase
     provider = get_triage_provider()
