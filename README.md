@@ -151,7 +151,7 @@ docker compose exec backend alembic upgrade head
 #### 3. Seed Realistic Complaint Data
 Seed the database with 30+ realistic municipal complaints (idempotent, safe to run multiple times):
 ```bash
-docker compose exec backend python scripts/seed.py
+docker compose exec backend python -m scripts.seed
 ```
 
 #### 4. Access the Application
