@@ -68,8 +68,8 @@ jobs:
           context: ./backend
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/t-urfan/civicpulse/backend:${{ github.sha }}
+            ghcr.io/t-urfan/civicpulse/backend:latest
 
       - name: Build and Push Frontend
         id: push_frontend
@@ -78,17 +78,17 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/frontend:latest
+            ghcr.io/t-urfan/civicpulse/frontend:${{ github.sha }}
+            ghcr.io/t-urfan/civicpulse/frontend:latest
 
       - name: Install Syft
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Emit Backend SBOM
-        run: syft ghcr.io/${{ github.repository }}/backend:${{ github.sha }} -o spdx-json=backend-sbom.json
+        run: syft ghcr.io/t-urfan/civicpulse/backend:${{ github.sha }} -o spdx-json=backend-sbom.json
         
       - name: Emit Frontend SBOM
-        run: syft ghcr.io/${{ github.repository }}/frontend:${{ github.sha }} -o spdx-json=frontend-sbom.json
+        run: syft ghcr.io/t-urfan/civicpulse/frontend:${{ github.sha }} -o spdx-json=frontend-sbom.json
 
       - name: Archive SBOMs
         uses: actions/upload-artifact@v4
@@ -116,8 +116,8 @@ jobs:
           if [ -d "k8s/overlays/prod" ]; then
             cd k8s/overlays/prod
             # We would normally inject the SHA here using kustomize edit set image, e.g.:
-            # kustomize edit set image backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-            # kustomize edit set image frontend=ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+            # kustomize edit set image backend=ghcr.io/t-urfan/civicpulse/backend:${{ github.sha }}
+            # kustomize edit set image frontend=ghcr.io/t-urfan/civicpulse/frontend:${{ github.sha }}
             kustomize build . | kubectl apply -f -
             
             # Wait for rollout
