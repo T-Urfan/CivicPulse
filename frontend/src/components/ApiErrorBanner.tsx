@@ -24,10 +24,12 @@ const ApiErrorBanner: React.FC<ApiErrorBannerProps> = ({ error, onDismiss }) => 
       messages = [`You are submitting too fast. Please wait ${waitTime} before trying again.`];
     } else if (error.status === 409) {
       title = 'Conflict';
-      messages = [error.body?.detail as string || 'Invalid state transition requested.'];
+      const detail = error.body && 'detail' in error.body ? (error.body.detail as string) : undefined;
+      messages = [detail || 'Invalid state transition requested.'];
     } else {
       title = `Error ${error.status}`;
-      messages = [error.body?.detail as string || error.statusText];
+      const detail = error.body && 'detail' in error.body ? (error.body.detail as string) : undefined;
+      messages = [detail || error.statusText];
     }
   }
 

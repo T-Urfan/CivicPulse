@@ -10,7 +10,10 @@ function App() {
     <ErrorBoundary>
       <div className="app">
         <header className="app-header">
-          <h1 className="app-title">CivicPulse</h1>
+          <div className="brand-wrapper">
+            <span className="pulse-indicator" aria-hidden="true"></span>
+            <h1 className="app-title">CivicPulse</h1>
+          </div>
           <nav className="app-nav">
             <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               Submit

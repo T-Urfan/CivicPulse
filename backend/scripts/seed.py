@@ -7,7 +7,12 @@ change existing seeded rows.
 
 import asyncio
 import logging
+from pathlib import Path
+import sys
 from typing import Any
+
+# Ensure project root is in sys.path when running directly as a script
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession

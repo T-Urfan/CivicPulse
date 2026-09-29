@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - civic_net
+      - internal
 
   redis:
     image: redis:7-alpine
@@ -30,7 +30,7 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - civic_net
+      - internal
 
   ollama:
     image: ollama/ollama
@@ -38,12 +38,14 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     networks:
-      - civic_net
+      - internal
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    # In production, this would be an image tag and we wouldn't map the port directly
+    # image: ${IMAGE_TAG:-backend} 
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgresql+asyncpg://civic_user:civic_password@db:5432/civicpulse
@@ -58,19 +60,21 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - civic_net
+      - edge
+      - internal
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    # In production, image: ${IMAGE_TAG:-frontend}
     restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
       - backend
     networks:
-      - civic_net
+      - edge
 
 volumes:
   postgres_data:
@@ -81,6 +85,10 @@ volumes:
     name: civicpulse_ollama_data
 
 networks:
-  civic_net:
-    name: civicpulse_network
+  edge:
+    name: civicpulse_edge_net
     driver: bridge
+  internal:
+    name: civicpulse_internal_net
+    driver: bridge
+    internal: true
