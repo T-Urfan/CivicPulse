@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+
 from redis.asyncio import Redis
 
 # Lua script for a fixed-window rate limiter.
