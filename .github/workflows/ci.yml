@@ -201,13 +201,13 @@ jobs:
           fi
 
           # Test Stats Cache
-          MISS_RES=$(curl -i -s http://localhost:8000/api/stats | grep 'X-Cache: MISS')
+          MISS_RES=$(curl -i -s http://localhost:8000/api/stats | grep -i 'x-cache: miss' || true)
           if [ -z "$MISS_RES" ]; then
             echo "Expected cache miss"
             exit 1
           fi
           
-          HIT_RES=$(curl -i -s http://localhost:8000/api/stats | grep 'X-Cache: HIT')
+          HIT_RES=$(curl -i -s http://localhost:8000/api/stats | grep -i 'x-cache: hit' || true)
           if [ -z "$HIT_RES" ]; then
             echo "Expected cache hit"
             exit 1
