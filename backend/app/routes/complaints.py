@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from redis.asyncio import Redis
-    from sqlalchemy.ext.asyncio import AsyncSession
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
 from app.models import (

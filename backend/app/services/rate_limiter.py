@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from redis.asyncio import Redis
+from redis.asyncio import Redis
 
 # Lua script for a fixed-window rate limiter.
 # Keys: [rate_limit_key]

@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from fastapi import APIRouter, Depends, HTTPException, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
+from redis.asyncio import Redis
 from sqlalchemy import text
-
-if TYPE_CHECKING:
-    from redis.asyncio import Redis
-    from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db_session
 from app.providers.redis import get_redis_dependency
