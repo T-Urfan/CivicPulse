@@ -1,0 +1,321 @@
+:root {
+  /* Apple iOS Futuristic Glassmorphism Palette */
+  --font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  
+  --bg-deep: #08090d;
+  --bg-surface: rgba(22, 27, 38, 0.55);
+  --bg-surface-elevated: rgba(30, 38, 54, 0.65);
+  --bg-glass-input: rgba(255, 255, 255, 0.05);
+  
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-highlight: rgba(255, 255, 255, 0.22);
+  --glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.55), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  --glass-shadow-hover: 0 24px 60px -8px rgba(0, 0, 0, 0.65), 0 0 1px 1px rgba(255, 255, 255, 0.12);
+
+  /* iOS Semantic Accent Colors */
+  --apple-blue: #0A84FF;
+  --apple-blue-hover: #0071E3;
+  --apple-blue-glow: rgba(10, 132, 255, 0.35);
+  --apple-cyan: #64D2FF;
+  --apple-indigo: #5E5CE6;
+  --apple-purple: #BF5AF2;
+  --apple-pink: #FF375F;
+  --apple-emerald: #30D158;
+  --apple-amber: #FF9F0A;
+  --apple-crimson: #FF453A;
+
+  --primary-color: var(--apple-blue);
+  --primary-hover: var(--apple-blue-hover);
+  --primary-glow: var(--apple-blue-glow);
+  --error-color: var(--apple-crimson);
+  --success-color: var(--apple-emerald);
+  --warning-color: var(--apple-amber);
+
+  --text-main: #FFFFFF;
+  --text-secondary: rgba(235, 235, 245, 0.75);
+  --text-muted: rgba(235, 235, 245, 0.5);
+  --text-tertiary: rgba(235, 235, 245, 0.32);
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --transition-spring: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.18s ease-out;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  letter-spacing: -0.012em;
+}
+
+/* Ambient iOS Mesh Wallpaper Lights */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(120px);
+  opacity: 0.45;
+  animation: floatAmbient 20s infinite alternate ease-in-out;
+}
+
+body::before {
+  top: -15%;
+  left: 20%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, #5E5CE6 0%, #0A84FF 50%, transparent 70%);
+}
+
+body::after {
+  bottom: 5%;
+  right: 15%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #BF5AF2 0%, #0A84FF 40%, transparent 75%);
+  animation-duration: 25s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes floatAmbient {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 40px) scale(1.08); }
+  100% { transform: translate(-40px, 80px) scale(0.96); }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  backdrop-filter: blur(10px);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Apple Glassmorphic Panel Primitive */
+.glass-panel {
+  position: relative;
+  background: var(--bg-surface);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  box-shadow: var(--glass-specular), var(--glass-shadow);
+  transition: var(--transition-spring);
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.glass-panel:hover {
+  border-color: var(--glass-border-highlight);
+  box-shadow: var(--glass-specular), var(--glass-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Form Controls - iOS Frosted Glass */
+input, textarea, select {
+  background: var(--bg-glass-input);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  transition: var(--transition-fast);
+  width: 100%;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Apple Buttons */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0A84FF 0%, #0071E3 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 11px 22px;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: var(--transition-spring);
+  box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  position: relative;
+  user-select: none;
+}
+
+button:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(10, 132, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Secondary Frosted Pill Button */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-main) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+/* iOS Banner Notifications */
+.api-error-banner {
+  background: rgba(255, 69, 58, 0.12);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(255, 69, 58, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: slideDownFade 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.api-error-title {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FF6961;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-error-list {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+}
+
+.api-error-close {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-secondary) !important;
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+}
+
+.api-error-close:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+}
+
+/* Skeleton Loading Animation */
+.skeleton-card {
+  height: 200px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.09) 50%, rgba(255, 255, 255, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: civic_user
+      POSTGRES_PASSWORD: civic_password
+      POSTGRES_DB: civicpulse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U civic_user -d civicpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+  ollama:
+    image: ollama/ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    # In production, this would be an image tag and we wouldn't map the port directly
+    # image: ${IMAGE_TAG:-backend} 
+    restart: unless-stopped
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://civic_user:civic_password@db:5432/civicpulse
+      - REDIS_URL=redis://redis:6379/0
+      - TRIAGE_PROVIDER=ollama
+      # Add GROQ_API_KEY in .env file if using groq
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - edge
+      - internal
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    # In production, image: ${IMAGE_TAG:-frontend}
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - edge
+
+volumes:
+  postgres_data:
+    name: civicpulse_postgres_data
+  redis_data:
+    name: civicpulse_redis_data
+  ollama_data:
+    name: civicpulse_ollama_data
+
+networks:
+  edge:
+    name: civicpulse_edge_net
+    driver: bridge
+  internal:
+    name: civicpulse_internal_net
+    driver: bridge
+    internal: true
