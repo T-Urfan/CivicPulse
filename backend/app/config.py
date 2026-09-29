@@ -36,6 +36,7 @@ class Settings(BaseSettings):
 
     # ── Rate limiting ────────────────────────────────────────────────────────
     RATE_LIMIT_REQUESTS: int = 15
+
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
     # ── Ollama ───────────────────────────────────────────────────────────────
