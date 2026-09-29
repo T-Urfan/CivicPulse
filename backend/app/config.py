@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     CORS_ALLOWED_ORIGINS: str = "http://localhost:3000"
 
     # ── Rate limiting ────────────────────────────────────────────────────────
-    RATE_LIMIT_REQUESTS: int = 10
+    RATE_LIMIT_REQUESTS: int = 15
+
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
     # ── Ollama ───────────────────────────────────────────────────────────────
