@@ -35,7 +35,8 @@ class LLMTriage(TriageProvider):
             "You are an expert municipal complaint triage assistant.\n"
             "Analyze the complaint and return a JSON object exactly matching this schema:\n"
             "{\n"
-            '  "category": "water" | "electricity" | "sanitation" | "roads" | "streetlights" | "other",\n'
+            '  "category": "water" | "electricity" | "sanitation" | '
+            '"roads" | "streetlights" | "other",\n'
             '  "priority": "high" | "normal" | "low",\n'
             '  "summary": "One line summary (max 140 chars)",\n'
             '  "confidence": 0.0 to 1.0\n'

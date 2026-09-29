@@ -53,11 +53,11 @@ select = [
     "S",    # flake8-bandit
     "T20",  # flake8-print
     "SIM",  # flake8-simplify
-    "TCH",  # flake8-type-checking
     "RUF",  # ruff-specific
 ]
 ignore = [
     "S101",  # allow assert in tests
+    "B008",  # allow FastAPI Depends
 ]
 
 [tool.ruff.lint.per-file-ignores]

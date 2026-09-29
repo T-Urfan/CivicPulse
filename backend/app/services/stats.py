@@ -23,12 +23,18 @@ class StatsService:
     async def _compute_db_stats(self) -> dict[str, Any]:
         """Compute live aggregates from the database."""
         # Aggregate by category
-        cat_stmt = select(DBComplaint.category, func.count(DBComplaint.id)).group_by(DBComplaint.category)
+        cat_stmt = (
+            select(DBComplaint.category, func.count(DBComplaint.id))
+            .group_by(DBComplaint.category)
+        )
         cat_result = await self.session.execute(cat_stmt)
         by_category = {row[0]: row[1] for row in cat_result.all()}
 
         # Aggregate by priority
-        pri_stmt = select(DBComplaint.priority, func.count(DBComplaint.id)).group_by(DBComplaint.priority)
+        pri_stmt = (
+            select(DBComplaint.priority, func.count(DBComplaint.id))
+            .group_by(DBComplaint.priority)
+        )
         pri_result = await self.session.execute(pri_stmt)
         by_priority = {row[0]: row[1] for row in pri_result.all()}
 

@@ -24,9 +24,15 @@ class RuleBasedTriage(TriageProvider):
         # Simple category rules
         if any(word in text_lower for word in ["water", "pipe", "leak", "sewerage", "gutter"]):
             category = Category.WATER
-        elif any(word in text_lower for word in ["electricity", "power", "light", "wire", "transformer", "voltage"]):
+        elif any(
+            word in text_lower for word in
+            ["electricity", "power", "light", "wire", "transformer", "voltage"]
+        ):
             category = Category.ELECTRICITY
-        elif any(word in text_lower for word in ["garbage", "trash", "kachra", "smell", "clean", "sweep"]):
+        elif any(
+            word in text_lower for word in
+            ["garbage", "trash", "kachra", "smell", "clean", "sweep"]
+        ):
             category = Category.SANITATION
         elif any(word in text_lower for word in ["road", "street", "pothole", "broken", "asphalt"]):
             category = Category.ROADS
@@ -34,7 +40,10 @@ class RuleBasedTriage(TriageProvider):
             category = Category.OTHER
 
         # Simple priority rules
-        if any(word in text_lower for word in ["blast", "spark", "burn", "die", "dead", "bite", "severe", "high"]):
+        if any(
+            word in text_lower for word in
+            ["blast", "spark", "burn", "die", "dead", "bite", "severe", "high"]
+        ):
             priority = Priority.HIGH
         elif any(word in text_lower for word in ["slow", "speed breaker", "money", "fee"]):
             priority = Priority.LOW

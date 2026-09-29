@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
